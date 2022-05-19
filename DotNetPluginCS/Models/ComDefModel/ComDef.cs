@@ -15,18 +15,5 @@ namespace DotNetPlugin.Models.ComDefModel
 
         [XmlElement]
         public InterfaceDef[] Interface { get; set; } = new InterfaceDef[0];
-
-        internal InterfaceDef[] FindAndJoinInterfaces(Guid iid)
-        {
-            var list = new List<InterfaceDef>();
-            var hit = Interface.SingleOrDefault(intf => intf.GetIID() == iid);
-            while (hit != null)
-            {
-                list.Insert(0, hit);
-
-                hit = Interface.SingleOrDefault(intf => intf.Name == hit.Inherit);
-            }
-            return list.ToArray();
-        }
     }
 }

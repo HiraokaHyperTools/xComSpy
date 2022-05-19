@@ -41,7 +41,7 @@ namespace DotNetPlugin.Utils
 
         private void InstallHookToInterface(nuint punk, Guid iid, CoClassHint progId)
         {
-            var ifsList = DotNetPluginCS.comDef.FindAndJoinInterfaces(iid);
+            var ifsList = DotNetPluginCS.loader.FindAndJoinInterfaces(iid);
             if (ifsList.Any())
             {
                 var lastIf = ifsList.Last();
@@ -51,7 +51,7 @@ namespace DotNetPlugin.Utils
             {
                 Console.WriteLine($"# Unknown IID!! {iid:B}");
 
-                ifsList = DotNetPluginCS.comDef.FindAndJoinInterfaces(IID_IUnknown);
+                ifsList = DotNetPluginCS.loader.FindAndJoinInterfaces(IID_IUnknown);
             }
 
             if (ifsList.Any())
@@ -122,7 +122,7 @@ namespace DotNetPlugin.Utils
 
         internal void DLLIsLoaded(string prefix)
         {
-            foreach (var _func in (DotNetPluginCS.comDef.Func ?? new FuncDef[0])
+            foreach (var _func in (DotNetPluginCS.loader.GetFuncs())
                 .Where(it => true
                     && it.Setup == "1"
                     && it.Name.StartsWith(prefix + ".")
