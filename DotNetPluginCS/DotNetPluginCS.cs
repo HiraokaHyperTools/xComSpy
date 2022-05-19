@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using DotNetPlugin.Models.ComDefModel;
@@ -16,7 +17,7 @@ namespace DotNetPlugin
         private const int MENU_DUMP = 1;
         private const int MENU_TEST = 2;
 
-        internal static ComDef comDef = null;
+        internal static ComDef comDef = new ComDef();
 
         public static bool PluginInit(Plugins.PLUG_INITSTRUCT initStruct)
         {
@@ -59,11 +60,22 @@ namespace DotNetPlugin
             var szFileName = info.szFileName;
             Console.WriteLine("[DotNet TEST] DotNet test debugging of file {0} started!", szFileName);
 
-            comDef = (ComDef)new XmlSerializer(typeof(ComDef)).Deserialize(
-                new MemoryStream(
-                    File.ReadAllBytes(@"H:\Proj\DotNetPluginCS\DotNetPluginCS\ComDef.xml")
-                )
-            );
+            var xmlFiles = new string[] {
+                @"H:\Proj\DotNetPluginCS\DotNetPluginCS\ComDef.xml",
+                Path.Combine(Path.GetDirectoryName(new Uri(typeof(DotNetPluginCS).Assembly.Location).LocalPath), "ComDef.xml"),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ComDef.xml"),
+            };
+            foreach (var xmlFile in xmlFiles
+                .Where(it => File.Exists(it))
+                .Take(1)
+            )
+            {
+                comDef = (ComDef)new XmlSerializer(typeof(ComDef)).Deserialize(
+                    new MemoryStream(
+                        File.ReadAllBytes(xmlFile)
+                    )
+                );
+            }
         }
 
         //[DllExport("CBSTOPDEBUG", CallingConvention.Cdecl)]
@@ -74,7 +86,6 @@ namespace DotNetPlugin
 
         private static void CBSYSTEMBREAKPOINT(Plugins.CBTYPE cbType, in Plugins.PLUG_CB_SYSTEMBREAKPOINT info)
         {
-            RegisteredCommands.RestartWatcher();
         }
 
         [DllExport("CBCREATEPROCESS", CallingConvention.Cdecl)]
@@ -85,6 +96,9 @@ namespace DotNetPlugin
             var DebugFileName = info.DebugFileName;
             var fdProcessInfo = info.fdProcessInfo;
             Console.WriteLine("[DotNet TEST] Create process {0}", info.DebugFileName);
+
+            Console.WriteLine($"# RestartWatcher");
+            RegisteredCommands.RestartWatcher();
         }
 
         [DllExport("CBLOADDLL", CallingConvention.Cdecl)]
@@ -93,6 +107,12 @@ namespace DotNetPlugin
             var LoadDll = info.LoadDll;
             var modInfo = info.modInfo;
             var modname = info.modname;
+
+            if (modname != null && modname.Contains('.'))
+            {
+                var prefix = Path.GetFileNameWithoutExtension(modname);
+                RegisteredCommands.DLLIsLoaded(prefix);
+            }
         }
 
         [DllExport("CBMENUENTRY", CallingConvention.Cdecl)]

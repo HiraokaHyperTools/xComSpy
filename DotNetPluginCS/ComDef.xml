@@ -1,28 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ComDef>
-  <Func Name="CoCreateInstance" Setup="1">
-    <Param Name="rclsid" CType="CLSID*" />
+  <Func Name="combase.CoCreateInstance" Setup="1">
+    <Param Name="rclsid" CType="CLSID*" IsCLSID="1" />
     <Param Name="pUnkOuter" CType="IUnknown*" />
     <Param Name="dwClsContext" CType="DWORD" />
     <Param Name="riid" CType="IID*" />
     <Param Name="ppv" CType="void**" RefIID="#3" />
   </Func>
-  <Func Name="CoCreateInstanceEx" Setup="1">
-    <Param Name="Clsid" CType="CLSID*" />
+  <Func Name="combase.CoCreateInstanceEx" Setup="1">
+    <Param Name="Clsid" CType="CLSID*" IsCLSID="1" />
     <Param Name="punkOuter" CType="IUnknown*" />
     <Param Name="dwClsCtx" CType="DWORD" />
     <Param Name="pServerInfo" CType="COSERVERINFO*" />
     <Param Name="dwCount" CType="DWORD" />
     <Param Name="pResults" CType="MULTI_QI*" RefMultiQICount="#4" />
   </Func>
-  <Func Name="CoGetObject" Setup="1">
+  <Func Name="ole32.CoGetObject" Setup="1">
     <Param Name="pszName" CType="LPCWSTR" />
     <Param Name="pBindOptions" CType="BIND_OPTS*" />
     <Param Name="riid" CType="IID*" />
     <Param Name="ppv" CType="void**" RefIID="#2" />
   </Func>
-  <Func Name="CoGetClassObject" Setup="1">
-    <Param Name="rclsid" CType="CLSID*" />
+  <Func Name="ole32.CoGetClassObject" Setup="1">
+    <Param Name="rclsid" CType="CLSID*" IsCLSID="1" />
     <Param Name="dwClsContext" CType="DWORD" />
     <Param Name="pvReserved" CType="void*" />
     <Param Name="riid" CType="IID*" />
@@ -236,6 +236,47 @@
     <Method Name="GetHelpInfo">
     </Method>
     <Method Name="ReleaseErrors">
+    </Method>
+  </Interface>
+  <Interface IID="{00000003-0000-0000-c000-000000000046}" Name="IMarshal" Inherit="IUnknown">
+    <Method Name="GetUnmarshalClass">
+      <Param Name="riid" CType="REFIID" />
+      <Param Name="pv" CType="void*" />
+      <Param Name="dwDestContext" CType="DWORD" />
+      <Param Name="pvDestContext" CType="void*" />
+      <Param Name="mshlflags" CType="DWORD" />
+      <Param Name="pCid" CType="CLSID*" />
+    </Method>
+    <Method Name="GetMarshalSizeMax">
+    </Method>
+    <Method Name="MarshalInterface">
+    </Method>
+    <Method Name="UnmarshalInterface">
+    </Method>
+    <Method Name="ReleaseMarshalData">
+    </Method>
+    <Method Name="DisconnectObject">
+    </Method>
+  </Interface>
+  <Interface IID="{DCB00000-570F-4A9B-8D69-199FDBA5723B}" Name="INetworkListManager" Inherit="IUnknown">
+    <!-- https://social.msdn.microsoft.com/Forums/en-US/f058dfbe-bd09-4fcb-9dc2-5216b3726177/network-list-manager-com-objects-not-registered-in-windows-vista-ultimate-sp-2?forum=windowsgeneraldevelopmentissues -->
+    <Method Name="GetNetworks">
+    </Method>
+    <Method Name="GetNetwork">
+    </Method>
+    <Method Name="GetNetworkConnections">
+    </Method>
+    <Method Name="GetNetworkConnection">
+    </Method>
+    <Method Name="get_IsConnectedToInternet">
+    </Method>
+    <Method Name="get_IsConnected">
+    </Method>
+    <Method Name="GetConnectivity">
+    </Method>
+    <Method Name="SetSimulatedProfileInfo">
+    </Method>
+    <Method Name="ClearSimulatedProfileInfo">
     </Method>
   </Interface>
 </ComDef>

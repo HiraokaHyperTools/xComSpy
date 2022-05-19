@@ -15,21 +15,25 @@ namespace DotNetPlugin.Utils
             string breakCond,
             string command,
             string commandCond,
-            string bpType
+            string bpType,
+            bool deleteFirst = true
         )
         {
-            Bridge.DbgCmdExec($"DeleteBPX {addr}");
-            Bridge.DbgCmdExec($"SetBPX {addr},\"{name}\",{bpType}");
-            Bridge.DbgCmdExec($"SetBreakpointCondition {addr},\"{breakCond}\"");
-            Bridge.DbgCmdExec($"SetBreakpointCommand {addr},\"{command}\"");
-            Bridge.DbgCmdExec($"SetBreakpointCommandCondition {addr},\"{commandCond}\"");
+            if (deleteFirst)
+            {
+                Bridge.DbgCmdExecDirect($"DeleteBPX {addr}");
+            }
+            Bridge.DbgCmdExecDirect($"SetBPX {addr},\"{name}\",{bpType}");
+            Bridge.DbgCmdExecDirect($"SetBreakpointCondition {addr},\"{breakCond}\"");
+            Bridge.DbgCmdExecDirect($"SetBreakpointCommand {addr},\"{command}\"");
+            Bridge.DbgCmdExecDirect($"SetBreakpointCommandCondition {addr},\"{commandCond}\"");
         }
 
         internal static void DeleteBp(
             string addr
         )
         {
-            Bridge.DbgCmdExec($"DeleteBPX {addr}");
+            Bridge.DbgCmdExecDirect($"DeleteBPX {addr}");
         }
     }
 }

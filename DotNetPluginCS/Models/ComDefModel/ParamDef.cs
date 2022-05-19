@@ -13,5 +13,6 @@ namespace DotNetPlugin.Models.ComDefModel
         [XmlAttribute] public string CType { get; set; }
         [XmlAttribute] public string RefIID { get; set; }
         [XmlAttribute] public string RefMultiQICount { get; set; }
+        [XmlAttribute] public string IsCLSID { get; set; }
     }
 }

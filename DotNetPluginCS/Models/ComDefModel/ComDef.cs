@@ -11,10 +11,10 @@ namespace DotNetPlugin.Models.ComDefModel
     public class ComDef
     {
         [XmlElement]
-        public FuncDef[] Func { get; set; }
+        public FuncDef[] Func { get; set; } = new FuncDef[0];
 
         [XmlElement]
-        public InterfaceDef[] Interface { get; set; }
+        public InterfaceDef[] Interface { get; set; } = new InterfaceDef[0];
 
         internal InterfaceDef[] FindAndJoinInterfaces(Guid iid)
         {

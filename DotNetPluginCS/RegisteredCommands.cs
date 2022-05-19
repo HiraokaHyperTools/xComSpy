@@ -85,5 +85,10 @@ namespace DotNetPlugin
         {
             watcher = new Watcher();
         }
+
+        internal static void DLLIsLoaded(string prefix)
+        {
+            watcher.DLLIsLoaded(prefix);
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace DotNetPlugin.Models.ComDefModel.Utils
         private static readonly Regex numRef = new Regex("^#(?<idx>\\d+)$");
 
         public List<OutputInterface> OutputInterfaces { get; } = new List<OutputInterface>();
+        public CoClassHint ProgId { get; }
 
         public ExitedExec(
             int hr,
@@ -88,6 +89,11 @@ namespace DotNetPlugin.Models.ComDefModel.Utils
                                 }
                             }
                         }
+                    }
+
+                    if (parmDef.IsCLSID == "1")
+                    {
+                        ProgId = new CoClassHint(MemHelper.TryReadGuid(parms[iter]));
                     }
                 }
             }

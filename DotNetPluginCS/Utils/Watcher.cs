@@ -18,47 +18,6 @@ namespace DotNetPlugin.Utils
 
         public Watcher()
         {
-            foreach (var _func in (DotNetPluginCS.comDef.Func ?? new FuncDef[0])
-                .Where(it => it.Setup == "1")
-            )
-            {
-                var func = _func;
-                bp.Install(
-                    addr: func.Name,
-                    hint: $"Begin{func.Name}",
-                    downCounter: int.MaxValue,
-                    callback: () =>
-                    {
-                        // on beginning of API
-                        var tid = (int)Bridge.DbgValFromString("tid()");
-
-                        var retAddr = Bridge.DbgValFromString("[esp]");
-                        var funcArgs = FuncHelper.FuncArgs(func.Param?.Length ?? 0);
-
-                        bp.Install(
-                            tid: tid,
-                            addr: FmtHelper.Hex(retAddr),
-                            hint: $"After{func.Name}",
-                            downCounter: 1,
-                            callback: () =>
-                            {
-                                // after exit of API
-                                var hr = Bridge.DbgValFromString("eax");
-
-                                var exited = new ExitedExec(
-                                    (int)hr,
-                                    null,
-                                    func,
-                                    funcArgs,
-                                    ValueResolver
-                                );
-
-                                Process(exited);
-                            }
-                        );
-                    }
-                );
-            }
         }
 
         internal bool ComSpyInternal(int argc, string[] argv)
@@ -80,7 +39,7 @@ namespace DotNetPlugin.Utils
             return true;
         }
 
-        private void InstallHookToInterface(nuint punk, Guid iid)
+        private void InstallHookToInterface(nuint punk, Guid iid, CoClassHint progId)
         {
             var ifsList = DotNetPluginCS.comDef.FindAndJoinInterfaces(iid);
             if (ifsList.Any())
@@ -115,6 +74,9 @@ namespace DotNetPlugin.Utils
                         {
                             var fullName = $"_{FmtHelper.Hex(vtbl)}_{ifs.Name}_{method.Name}";
 
+                            //Bridge.DbgCmdExec($"labelset {FmtHelper.Hex(funcAddr)},{ifs.Name}::{method.Name}");
+                            Console.WriteLine($"@ {FmtHelper.Hex(funcAddr)} : {ifs.Name}::{method.Name} // {progId}");
+
                             bp.Install(
                                 addr: FmtHelper.Hex(funcAddr),
                                 hint: fullName,
@@ -145,7 +107,7 @@ namespace DotNetPlugin.Utils
                                                 ValueResolver
                                             );
 
-                                            Process(exited);
+                                            Process(exited, exited.ProgId ?? progId);
                                         }
                                     );
                                 }
@@ -155,6 +117,54 @@ namespace DotNetPlugin.Utils
                         vfuncIdx += 1;
                     }
                 }
+            }
+        }
+
+        internal void DLLIsLoaded(string prefix)
+        {
+            foreach (var _func in (DotNetPluginCS.comDef.Func ?? new FuncDef[0])
+                .Where(it => true
+                    && it.Setup == "1"
+                    && it.Name.StartsWith(prefix + ".")
+                )
+            )
+            {
+                var func = _func;
+                bp.Install(
+                    addr: func.Name,
+                    hint: $"Begin{func.Name}",
+                    downCounter: int.MaxValue,
+                    callback: () =>
+                    {
+                        // on beginning of API
+                        var tid = (int)Bridge.DbgValFromString("tid()");
+
+                        var retAddr = Bridge.DbgValFromString("[esp]");
+                        var funcArgs = FuncHelper.FuncArgs(func.Param?.Length ?? 0);
+
+                        bp.Install(
+                            tid: tid,
+                            addr: FmtHelper.Hex(retAddr),
+                            hint: $"After{func.Name}",
+                            downCounter: 1,
+                            callback: () =>
+                            {
+                                // after exit of API
+                                var hr = Bridge.DbgValFromString("eax");
+
+                                var exited = new ExitedExec(
+                                    (int)hr,
+                                    null,
+                                    func,
+                                    funcArgs,
+                                    ValueResolver
+                                );
+
+                                Process(exited, exited.ProgId);
+                            }
+                        );
+                    }
+                );
             }
         }
 
@@ -172,11 +182,11 @@ namespace DotNetPlugin.Utils
             return null;
         }
 
-        private void Process(ExitedExec exited)
+        private void Process(ExitedExec exited, CoClassHint progId)
         {
             foreach (var outIfs in exited.OutputInterfaces)
             {
-                InstallHookToInterface(outIfs.pv, outIfs.iid);
+                InstallHookToInterface(outIfs.pv, outIfs.iid, progId);
             }
         }
     }

@@ -36,25 +36,29 @@ namespace DotNetPlugin.Utils
         {
             var callKey = $"_LBP_{addr}";
 
-            BpHelper.SetBp(
-                addr: addr,
-                name: "",
-                breakCond: "0",
-                command: $"ComSpyInternal {callKey},call",
-                commandCond: "1",
-                bpType: "short"
-            );
+            if (!installed.Any(it => it.callKey == callKey))
+            {
+                BpHelper.SetBp(
+                    addr: addr,
+                    name: "",
+                    breakCond: "0",
+                    command: $"ComSpyInternal {callKey},call",
+                    commandCond: "1",
+                    bpType: "short",
+                    deleteFirst: false
+                );
+            }
 
             installed.Add(
-                new Installed
-                {
-                    addr = addr,
-                    callKey = callKey,
-                    downCounter = downCounter,
-                    callback = callback,
-                    tid = tid,
-                }
-            );
+            new Installed
+            {
+                addr = addr,
+                callKey = callKey,
+                downCounter = downCounter,
+                callback = callback,
+                tid = tid,
+            }
+        );
         }
 
         internal void Call(string callKey, int tid)
