@@ -1,22 +1,22 @@
 ﻿using DotNetPlugin.Models.ComDefModel.Interfaces;
+using DotNetPlugin.Models.ComDefModel.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace DotNetPlugin.Models.ComDefModel
 {
-    public class InterfaceDef : IParentDef
+    public class FuncDef : ICallDef
     {
-        [XmlAttribute] public string IID { get; set; }
         [XmlAttribute] public string Name { get; set; }
-        [XmlAttribute] public string Inherit { get; set; }
-
-        public Guid GetIID() => string.IsNullOrEmpty(IID) ? Guid.Empty : new Guid(IID);
+        [XmlAttribute] public string Setup { get; set; }
+        [XmlAttribute] public string Print { get; set; }
 
         [XmlElement]
-        public MethodDef[] Method { get; set; }
+        public ParamDef[] Param { get; set; }
     }
 }

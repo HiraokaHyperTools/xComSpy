@@ -24,5 +24,12 @@ namespace DotNetPlugin.Utils
             Bridge.DbgCmdExec($"SetBreakpointCommand {addr},\"{command}\"");
             Bridge.DbgCmdExec($"SetBreakpointCommandCondition {addr},\"{commandCond}\"");
         }
+
+        internal static void DeleteBp(
+            string addr
+        )
+        {
+            Bridge.DbgCmdExec($"DeleteBPX {addr}");
+        }
     }
 }

@@ -38,5 +38,27 @@ namespace DotNetPlugin.Utils
                 Marshal.FreeCoTaskMem(ptr);
             }
         }
+
+        internal static string ReadUTF16From(UIntPtr parm)
+        {
+            if (parm == UIntPtr.Zero)
+            {
+                return null;
+            }
+
+            string resp = "";
+            while (true)
+            {
+                var word = ReadMem(parm, 2);
+                var ch = (char)(word[0] | (word[1] << 8));
+                if (ch == 0)
+                {
+                    break;
+                }
+                resp += ch;
+                parm += 2;
+            }
+            return resp;
+        }
     }
 }

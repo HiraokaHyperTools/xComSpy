@@ -1,13 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ComDef>
+  <Func Name="CoCreateInstance" Setup="1">
+    <Param Name="rclsid" CType="CLSID*" />
+    <Param Name="pUnkOuter" CType="IUnknown*" />
+    <Param Name="dwClsContext" CType="DWORD" />
+    <Param Name="riid" CType="IID*" />
+    <Param Name="ppv" CType="void**" RefIID="#3" />
+  </Func>
+  <Func Name="CoCreateInstanceEx" Setup="1">
+    <Param Name="Clsid" CType="CLSID*" />
+    <Param Name="punkOuter" CType="IUnknown*" />
+    <Param Name="dwClsCtx" CType="DWORD" />
+    <Param Name="pServerInfo" CType="COSERVERINFO*" />
+    <Param Name="dwCount" CType="DWORD" />
+    <Param Name="pResults" CType="MULTI_QI*" RefMultiQICount="#4" />
+  </Func>
+  <Func Name="CoGetObject" Setup="1">
+    <Param Name="pszName" CType="LPCWSTR" />
+    <Param Name="pBindOptions" CType="BIND_OPTS*" />
+    <Param Name="riid" CType="IID*" />
+    <Param Name="ppv" CType="void**" RefIID="#2" />
+  </Func>
+  <Func Name="CoGetClassObject" Setup="1">
+    <Param Name="rclsid" CType="CLSID*" />
+    <Param Name="dwClsContext" CType="DWORD" />
+    <Param Name="pvReserved" CType="void*" />
+    <Param Name="riid" CType="IID*" />
+    <Param Name="ppv" CType="void**" RefIID="#3" />
+  </Func>
+
   <!--
   GUIDS
   https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/Base/data/typeinfo/win32/msvcrt/guids.txt
   -->
   <Interface IID="{00000000-0000-0000-C000-000000000046}" Name="IUnknown">
     <Method Name="QueryInterface">
-      <Param Name="riid" Type="IID*" />
-      <Param Name="ppvObj" Type="void**" RefIID="#0" />
+      <Param Name="riid" CType="IID*" />
+      <Param Name="ppvObj" CType="void**" RefIID="#0" />
     </Method>
     <Method Name="AddRef">
     </Method>
@@ -16,10 +45,10 @@
   </Interface>
   <Interface IID="{000214f9-0000-0000-c000-000000000046}" Name="IShellLinkW" Inherit="IUnknown">
     <Method Name="GetPath">
-      <Param Name="pszFile" Type="WCHAR*" />
-      <Param Name="cch" Type="int" />
-      <Param Name="pfd" Type="WIN32_FIND_DATAW*" />
-      <Param Name="fFlags" Type="DWORD" />
+      <Param Name="pszFile" CType="WCHAR*" />
+      <Param Name="cch" CType="int" />
+      <Param Name="pfd" CType="WIN32_FIND_DATAW*" />
+      <Param Name="fFlags" CType="DWORD" />
     </Method>
     <Method Name="GetIDList">
     </Method>
@@ -58,25 +87,25 @@
   </Interface>
   <Interface IID="{0000010c-0000-0000-c000-000000000046}" Name="IPersist" Inherit="IUnknown">
     <Method Name="GetClassID">
-      <Param Name="pClassID" Type="CLSID*" />
+      <Param Name="pClassID" CType="CLSID*" />
     </Method>
   </Interface>
   <Interface IID="{0000010b-0000-0000-c000-000000000046}" Name="IPersistFile" Inherit="IPersist">
     <Method Name="IsDirty">
     </Method>
     <Method Name="Load">
-      <Param Name="pszFileName" Type="WCHAR*" />
-      <Param Name="dwMode" Type="DWORD" />
+      <Param Name="pszFileName" CType="WCHAR*" />
+      <Param Name="dwMode" CType="DWORD" />
     </Method>
     <Method Name="Save">
-      <Param Name="pszFileName" Type="WCHAR*" />
-      <Param Name="fRemember" Type="BOOL" />
+      <Param Name="pszFileName" CType="WCHAR*" />
+      <Param Name="fRemember" CType="BOOL" />
     </Method>
     <Method Name="SaveCompleted">
-      <Param Name="pszFileName" Type="WCHAR*" />
+      <Param Name="pszFileName" CType="WCHAR*" />
     </Method>
     <Method Name="GetCurFile">
-      <Param Name="ppszFileName" Type="WCHAR**" />
+      <Param Name="ppszFileName" CType="WCHAR**" />
     </Method>
   </Interface>
   <Interface IID="{2206CCB1-19C1-11D1-89E0-00C04FD7A829}" Name="IDataInitialize" Inherit="IUnknown">
@@ -98,7 +127,8 @@
     </Method>
     <Method Name="GetSource">
     </Method>
-    <Method Name="GetDescription">
+    <Method Name="GetDescription" Print="1">
+      <Param Name="pBstrDescription" CType="BSTR*" />
     </Method>
     <Method Name="GetHelpFile">
     </Method>
@@ -107,9 +137,9 @@
   </Interface>
   <Interface IID="{00000001-0000-0000-c000-000000000046}" Name="IClassFactory" Inherit="IUnknown">
     <Method Name="CreateInstance">
-      <Param Name="pUnkOuter" Type="IUnknown*" />
-      <Param Name="riid" Type="IID*" />
-      <Param Name="ppvObj" Type="void**" RefIID="#1" />
+      <Param Name="pUnkOuter" CType="IUnknown*" />
+      <Param Name="riid" CType="IID*" />
+      <Param Name="ppvObj" CType="void**" RefIID="#1" />
     </Method>
     <Method Name="LockServer">
     </Method>
@@ -119,9 +149,20 @@
     </Method>
     <Method Name="GetTypeInfo">
     </Method>
-    <Method Name="GetIDsOfNames">
+    <Method Name="GetIDsOfNames" Print="1">
+      <Param Name="rgszNames" CType="LPOLESTR*" />
+      <Param Name="cNames" CType="UINT" />
+      <Param Name="pMemId" CType="MEMBERID*" />
     </Method>
-    <Method Name="Invoke" IDispatchInvoke="1">
+    <Method Name="Invoke" IDispatchInvoke="1" Print="1">
+      <Param Name="dispIdMember" CType="DISPID" />
+      <Param Name="riid" CType="REFIID" />
+      <Param Name="lcid" CType="LCID" />
+      <Param Name="wFlags" CType="WORD" />
+      <Param Name="pDispParams" CType="DISPPARAMS*" />
+      <Param Name="pVarResult" CType="VARIANT*" />
+      <Param Name="pExcepInfo" CType="EXCEPINFO*" />
+      <Param Name="puArgErr" CType="UINT*" />
     </Method>
   </Interface>
   <Interface IID="{0c733a8d-2a1c-11ce-ade5-00aa0044773d}" Name="IDataConvert" Inherit="IUnknown">
@@ -176,15 +217,21 @@
     <!-- https://stackoverflow.com/questions/20092901/how-to-find-guid-of-ie-for-the-program -->
     <!-- https://docs.microsoft.com/ja-jp/windows/win32/api/ocidl/nn-ocidl-iobjectwithsite -->
     <Method Name="GetSite">
-      <Param Name="riid" Type="IID*" />
-      <Param Name="ppvSite" Type="void**" RefIID="#0" />
+      <Param Name="riid" CType="IID*" />
+      <Param Name="ppvSite" CType="void**" RefIID="#0" />
     </Method>
     <Method Name="SetSite">
     </Method>
   </Interface>
   <Interface IID="{0c733a66-2a1c-11ce-ade5-00aa0044773d}" Name="IErrorLookup" Inherit="IUnknown">
     <!-- https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms723039(v=vs.85) -->
-    <Method Name="GetErrorDescription">
+    <Method Name="GetErrorDescription" Print="1">
+      <Param Name="hrError" CType="HRESULT" />
+      <Param Name="dwLookupID" CType="DWORD" />
+      <Param Name="pdispparams" CType="DISPPARAMS*" />
+      <Param Name="lcid" CType="LCID" />
+      <Param Name="pbstrSource" CType="BSTR*" />
+      <Param Name="pbstrDescription" CType="BSTR*" />
     </Method>
     <Method Name="GetHelpInfo">
     </Method>

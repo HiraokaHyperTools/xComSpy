@@ -10,7 +10,8 @@ namespace DotNetPlugin.Models.ComDefModel
     public class ParamDef
     {
         [XmlAttribute] public string Name { get; set; }
-        [XmlAttribute] public string Type { get; set; }
+        [XmlAttribute] public string CType { get; set; }
         [XmlAttribute] public string RefIID { get; set; }
+        [XmlAttribute] public string RefMultiQICount { get; set; }
     }
 }
