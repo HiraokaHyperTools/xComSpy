@@ -7,7 +7,7 @@ namespace DotNetPlugin
 {
     public static class PluginMain
     {
-        private const string plugin_name = "DotNetPlugin";
+        private const string plugin_name = "xComSpy";
         private const int plugin_version = 1;
 
         [DllExport("pluginit", CallingConvention.Cdecl)]

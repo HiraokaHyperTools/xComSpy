@@ -15,27 +15,17 @@ namespace DotNetPlugin
     public class DotNetPluginCS
     {
         private const int MENU_ABOUT = 0;
-        private const int MENU_DUMP = 1;
-        private const int MENU_TEST = 2;
 
         internal static LoadComDef loader = new LoadComDef();
 
         public static bool PluginInit(Plugins.PLUG_INITSTRUCT initStruct)
         {
-            Console.WriteLine("[DotNet TEST] pluginHandle: {0}", Plugins.pluginHandle);
-
-            if (!Plugins._plugin_registercommand(Plugins.pluginHandle, "DotNetpluginTestCommand", RegisteredCommands.cbNetTestCommand, false))
-                Console.WriteLine("[DotNet TEST] error registering the \"DotNetpluginTestCommand\" command!");
-            if (!Plugins._plugin_registercommand(Plugins.pluginHandle, "DotNetDumpProcess", RegisteredCommands.cbDumpProcessCommand, true))
-                Console.WriteLine("[DotNet TEST] error registering the \"DotNetDumpProcess\" command!");
-            if (!Plugins._plugin_registercommand(Plugins.pluginHandle, "DotNetModuleEnum", RegisteredCommands.cbModuleEnum, true))
-                Console.WriteLine("[DotNet TEST] error registering the \"DotNetModuleEnum\" command!");
+            Console.WriteLine("[xComSpy] pluginHandle: {0}", Plugins.pluginHandle);
 
             if (!Plugins._plugin_registercommand(Plugins.pluginHandle, "ComSpyInternal", RegisteredCommands.cbComSpyInternal, true))
-                Console.WriteLine("[DotNet TEST] error registering the \"ComSpyInternal\" command!");
+                Console.WriteLine("[xComSpy] error registering the \"ComSpyInternal\" command!");
 
             Plugins._plugin_registercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_INITDEBUG, (cbType, info) => CBINITDEBUG(cbType, in info.ToStructUnsafe<Plugins.PLUG_CB_INITDEBUG>()));
-            Plugins._plugin_registercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_STOPDEBUG, (cbType, info) => CBSTOPDEBUG(cbType, in info.ToStructUnsafe<Plugins.PLUG_CB_STOPDEBUG>()));
             Plugins._plugin_registercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_SYSTEMBREAKPOINT, (cbType, info) => CBSYSTEMBREAKPOINT(cbType, in info.ToStructUnsafe<Plugins.PLUG_CB_SYSTEMBREAKPOINT>()));
             return true;
         }
@@ -43,31 +33,21 @@ namespace DotNetPlugin
         public static void PluginStop()
         {
             Plugins._plugin_unregistercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_INITDEBUG);
-            Plugins._plugin_unregistercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_STOPDEBUG);
+            Plugins._plugin_unregistercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_SYSTEMBREAKPOINT);
         }
 
         public static void PluginSetup(Plugins.PLUG_SETUPSTRUCT setupStruct)
         {
             Plugins._plugin_menuaddentry(setupStruct.hMenu, 0, "&About...");
-            Plugins._plugin_menuaddentry(setupStruct.hMenu, 1, "&DotNetDumpProcess");
-            Plugins._plugin_menuaddentry(setupStruct.hMenu, 2, "&Hex Editor");
-            int hSubMenu = Plugins._plugin_menuadd(setupStruct.hMenu, "sub menu");
-            Plugins._plugin_menuaddentry(hSubMenu, 3, "sub menu entry");
         }
 
         //[DllExport("CBINITDEBUG", CallingConvention.Cdecl)]
         public static void CBINITDEBUG(Plugins.CBTYPE cbType, in Plugins.PLUG_CB_INITDEBUG info)
         {
             var szFileName = info.szFileName;
-            Console.WriteLine("[DotNet TEST] DotNet test debugging of file {0} started!", szFileName);
+            Console.WriteLine("[xComSpy] xComSpy debugging of file {0} started!", szFileName);
 
             loader = new LoadComDef();
-        }
-
-        //[DllExport("CBSTOPDEBUG", CallingConvention.Cdecl)]
-        public static void CBSTOPDEBUG(Plugins.CBTYPE cbType, in Plugins.PLUG_CB_STOPDEBUG info)
-        {
-            Console.WriteLine("[DotNet TEST] DotNet test debugging stopped!");
         }
 
         private static void CBSYSTEMBREAKPOINT(Plugins.CBTYPE cbType, in Plugins.PLUG_CB_SYSTEMBREAKPOINT info)
@@ -81,7 +61,7 @@ namespace DotNetPlugin
             var modInfo = info.modInfo;
             var DebugFileName = info.DebugFileName;
             var fdProcessInfo = info.fdProcessInfo;
-            Console.WriteLine("[DotNet TEST] Create process {0}", info.DebugFileName);
+            Console.WriteLine("[xComSpy] Create process {0}", info.DebugFileName);
 
             Console.WriteLine($"# RestartWatcher");
             RegisteredCommands.RestartWatcher();
@@ -107,15 +87,7 @@ namespace DotNetPlugin
             switch (info.hEntry)
             {
                 case MENU_ABOUT:
-                    Interaction.MsgBox("Test DotNet Plugins For x64dbg\nCoded By Ahmadmansoor/exetools", MsgBoxStyle.OkOnly, "Info");
-                    break;
-                case MENU_DUMP:
-                    if (!Bridge.DbgIsDebugging())
-                    {
-                        Console.WriteLine("You need to be debugging to use this Command");
-                        break;
-                    }
-                    Bridge.DbgCmdExec("DotNetDumpProcess");
+                    Interaction.MsgBox("Test DotNet Plugins For x64dbg\nCoded By Ahmadmansoor/exetools\n\nxComSpy\nCoded by kenjiuno", MsgBoxStyle.OkOnly, "Info");
                     break;
             }
         }

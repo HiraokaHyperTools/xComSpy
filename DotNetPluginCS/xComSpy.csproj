@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>DotNetPlugin</AssemblyName>
-    <RootNamespace>DotNetPlugin</RootNamespace>
+    <AssemblyName>xComSpy</AssemblyName>
+    <RootNamespace>xComSpy</RootNamespace>
     <TargetFramework>net472</TargetFramework>
     <Platforms>x86;x64</Platforms>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
