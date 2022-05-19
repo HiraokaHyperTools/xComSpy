@@ -277,5 +277,10 @@ namespace Managed.x64dbg.SDK
         {
             public int hEntry;
         }
+
+        public struct PLUG_CB_SYSTEMBREAKPOINT
+        {
+
+        }
     }
 }

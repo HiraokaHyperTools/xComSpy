@@ -222,5 +222,8 @@ namespace Managed.x64dbg.SDK
 
         [DllImport("TitanEngine.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
         public static extern bool StaticFileLoad(string szFileName, uint DesiredAccess, bool SimulateLoad, IntPtr FileHandle, ref uint LoadedSize, IntPtr FileMap, IntPtr FileMapVA);
+
+        [DllImport("TitanEngine.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern bool MemoryReadSafe(UIntPtr hProcess, UIntPtr lpBaseAddress, IntPtr lpBuffer, IntPtr nSize, out IntPtr lpNumberOfBytesRead);
     }
 }

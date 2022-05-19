@@ -1,6 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using DotNetPlugin.Models.ComDefModel;
+using DotNetPlugin.Utils;
 using Managed.x64dbg.Script;
 using Managed.x64dbg.SDK;
 using Microsoft.VisualBasic;
@@ -10,6 +15,8 @@ namespace DotNetPlugin
 {
     public static class RegisteredCommands
     {
+        private static Watcher watcher;
+
         public static bool cbNetTestCommand(int argc, string[] argv)
         {
             Console.WriteLine("[.net TEST] .Net test command!");
@@ -67,6 +74,16 @@ namespace DotNetPlugin
                     Console.WriteLine("[DotNet TEST]    {0} \"{1}\"", section.addr.ToPtrString(), section.name);
             }
             return true;
+        }
+
+        internal static bool cbComSpyInternal(int argc, string[] argv)
+        {
+            return watcher.ComSpyInternal(argc, argv);
+        }
+
+        internal static void RestartWatcher()
+        {
+            watcher = new Watcher();
         }
     }
 }

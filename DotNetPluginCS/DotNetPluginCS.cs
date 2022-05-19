@@ -1,5 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Xml.Serialization;
+using DotNetPlugin.Models.ComDefModel;
+using DotNetPlugin.Utils;
 using Managed.x64dbg.SDK;
 using Microsoft.VisualBasic;
 using RGiesecke.DllExport;
@@ -12,6 +16,8 @@ namespace DotNetPlugin
         private const int MENU_DUMP = 1;
         private const int MENU_TEST = 2;
 
+        internal static ComDef comDef = null;
+
         public static bool PluginInit(Plugins.PLUG_INITSTRUCT initStruct)
         {
             Console.WriteLine("[DotNet TEST] pluginHandle: {0}", Plugins.pluginHandle);
@@ -23,8 +29,12 @@ namespace DotNetPlugin
             if (!Plugins._plugin_registercommand(Plugins.pluginHandle, "DotNetModuleEnum", RegisteredCommands.cbModuleEnum, true))
                 Console.WriteLine("[DotNet TEST] error registering the \"DotNetModuleEnum\" command!");
 
+            if (!Plugins._plugin_registercommand(Plugins.pluginHandle, "ComSpyInternal", RegisteredCommands.cbComSpyInternal, true))
+                Console.WriteLine("[DotNet TEST] error registering the \"ComSpyInternal\" command!");
+
             Plugins._plugin_registercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_INITDEBUG, (cbType, info) => CBINITDEBUG(cbType, in info.ToStructUnsafe<Plugins.PLUG_CB_INITDEBUG>()));
             Plugins._plugin_registercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_STOPDEBUG, (cbType, info) => CBSTOPDEBUG(cbType, in info.ToStructUnsafe<Plugins.PLUG_CB_STOPDEBUG>()));
+            Plugins._plugin_registercallback(Plugins.pluginHandle, Plugins.CBTYPE.CB_SYSTEMBREAKPOINT, (cbType, info) => CBSYSTEMBREAKPOINT(cbType, in info.ToStructUnsafe<Plugins.PLUG_CB_SYSTEMBREAKPOINT>()));
             return true;
         }
 
@@ -48,12 +58,23 @@ namespace DotNetPlugin
         {
             var szFileName = info.szFileName;
             Console.WriteLine("[DotNet TEST] DotNet test debugging of file {0} started!", szFileName);
+
+            comDef = (ComDef)new XmlSerializer(typeof(ComDef)).Deserialize(
+                new MemoryStream(
+                    File.ReadAllBytes(@"H:\Proj\DotNetPluginCS\DotNetPluginCS\ComDef.xml")
+                )
+            );
         }
 
         //[DllExport("CBSTOPDEBUG", CallingConvention.Cdecl)]
         public static void CBSTOPDEBUG(Plugins.CBTYPE cbType, in Plugins.PLUG_CB_STOPDEBUG info)
         {
             Console.WriteLine("[DotNet TEST] DotNet test debugging stopped!");
+        }
+
+        private static void CBSYSTEMBREAKPOINT(Plugins.CBTYPE cbType, in Plugins.PLUG_CB_SYSTEMBREAKPOINT info)
+        {
+            RegisteredCommands.RestartWatcher();
         }
 
         [DllExport("CBCREATEPROCESS", CallingConvention.Cdecl)]

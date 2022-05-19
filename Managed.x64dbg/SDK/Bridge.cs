@@ -82,6 +82,9 @@ namespace Managed.x64dbg.SDK
         public static extern IntPtr BridgeAlloc(nuint size);
 
         [DllImport(dll, CallingConvention = cdecl, ExactSpelling = true)]
+        public static extern bool DbgMemRead(UIntPtr va, IntPtr dest, IntPtr size);
+
+        [DllImport(dll, CallingConvention = cdecl, ExactSpelling = true)]
         public static extern void BridgeFree(IntPtr ptr);
 
         public struct ICONDATA

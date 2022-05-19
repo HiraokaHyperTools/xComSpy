@@ -43,7 +43,7 @@ namespace Managed.x64dbg.SDK
             WriteLine(new string(buffer, index, count));
 
         public override void WriteLine(string value) =>
-            WriteLine(value, Array.Empty<object>());
+            WriteLine("{0}", value);
 
         public override void WriteLine(string format, object arg0) =>
             WriteLine(format, new[] { arg0 });
