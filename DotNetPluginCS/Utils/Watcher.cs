@@ -3,16 +3,20 @@ using DotNetPlugin.Models.ComDefModel.Utils;
 using Managed.x64dbg.SDK;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xComSpy.Models.ComDefModel.Utils;
 
 namespace DotNetPlugin.Utils
 {
     internal class Watcher
     {
         private HashSet<long> hooksInstalled = new HashSet<long>();
+        private HashSet<Guid> alreadyUnk = new HashSet<Guid>();
         private LocalBpHelper bp = new LocalBpHelper();
+        private TextWriter log = LogToMyFile.Get();
 
         private static readonly Guid IID_IUnknown = new Guid("{00000000-0000-0000-C000-000000000046}");
 
@@ -45,11 +49,14 @@ namespace DotNetPlugin.Utils
             if (ifsList.Any())
             {
                 var lastIf = ifsList.Last();
-                Console.WriteLine($"# Known: {lastIf.Name}");
+                log.WriteLine($"# Known: {lastIf.Name}");
             }
             else
             {
-                Console.WriteLine($"# Unknown IID!! {iid:B}");
+                if (alreadyUnk.Add(iid))
+                {
+                    log.WriteLine($"# Unknown IID!! {iid:B}");
+                }
 
                 ifsList = DotNetPluginCS.loader.FindAndJoinInterfaces(IID_IUnknown);
             }
@@ -58,7 +65,7 @@ namespace DotNetPlugin.Utils
             {
                 var vtbl = Bridge.DbgValFromString($"[{FmtHelper.Hex(punk)}]");
 
-                var vfuncIdx = 0;
+                var vfuncIdx = -1;
 
                 foreach (var _ifs in ifsList)
                 {
@@ -66,7 +73,14 @@ namespace DotNetPlugin.Utils
 
                     foreach (var _method in ifs.Method)
                     {
+                        vfuncIdx += 1;
+
                         var method = _method;
+
+                        if (method.Trace != "1")
+                        {
+                            continue;
+                        }
 
                         var funcAddr = Bridge.DbgValFromString($"[[{FmtHelper.Hex(punk)}]+.{IntPtr.Size * vfuncIdx}]");
 
@@ -75,7 +89,7 @@ namespace DotNetPlugin.Utils
                             var fullName = $"_{FmtHelper.Hex(vtbl)}_{ifs.Name}_{method.Name}";
 
                             //Bridge.DbgCmdExec($"labelset {FmtHelper.Hex(funcAddr)},{ifs.Name}::{method.Name}");
-                            Console.WriteLine($"@ {FmtHelper.Hex(funcAddr)} : {ifs.Name}::{method.Name} // {progId}");
+                            log.WriteLine($"@ {FmtHelper.Hex(funcAddr)} : {ifs.Name}::{method.Name} // {progId}");
 
                             bp.Install(
                                 addr: FmtHelper.Hex(funcAddr),
@@ -113,8 +127,6 @@ namespace DotNetPlugin.Utils
                                 }
                             );
                         }
-
-                        vfuncIdx += 1;
                     }
                 }
             }

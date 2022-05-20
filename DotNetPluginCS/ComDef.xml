@@ -34,7 +34,7 @@
   https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/Base/data/typeinfo/win32/msvcrt/guids.txt
   -->
   <Interface IID="{00000000-0000-0000-C000-000000000046}" Name="IUnknown">
-    <Method Name="QueryInterface">
+    <Method Name="QueryInterface" Trace="1">
       <Param Name="riid" CType="IID*" />
       <Param Name="ppvObj" CType="void**" RefIID="#0" />
     </Method>
@@ -127,7 +127,7 @@
     </Method>
     <Method Name="GetSource">
     </Method>
-    <Method Name="GetDescription" Print="1">
+    <Method Name="GetDescription" Print="1" Trace="1">
       <Param Name="pBstrDescription" CType="BSTR*" />
     </Method>
     <Method Name="GetHelpFile">
@@ -136,7 +136,7 @@
     </Method>
   </Interface>
   <Interface IID="{00000001-0000-0000-c000-000000000046}" Name="IClassFactory" Inherit="IUnknown">
-    <Method Name="CreateInstance">
+    <Method Name="CreateInstance" Trace="1">
       <Param Name="pUnkOuter" CType="IUnknown*" />
       <Param Name="riid" CType="IID*" />
       <Param Name="ppvObj" CType="void**" RefIID="#1" />
@@ -154,7 +154,7 @@
       <Param Name="cNames" CType="UINT" />
       <Param Name="pMemId" CType="MEMBERID*" />
     </Method>
-    <Method Name="Invoke" IDispatchInvoke="1" Print="1">
+    <Method Name="Invoke" IDispatchInvoke="1">
       <Param Name="dispIdMember" CType="DISPID" />
       <Param Name="riid" CType="REFIID" />
       <Param Name="lcid" CType="LCID" />
@@ -216,7 +216,7 @@
   <Interface IID="{FC4801A3-2BA9-11CF-A229-00AA003D7352}" Name="IObjectWithSite" Inherit="IUnknown">
     <!-- https://stackoverflow.com/questions/20092901/how-to-find-guid-of-ie-for-the-program -->
     <!-- https://docs.microsoft.com/ja-jp/windows/win32/api/ocidl/nn-ocidl-iobjectwithsite -->
-    <Method Name="GetSite">
+    <Method Name="GetSite" Trace="1">
       <Param Name="riid" CType="IID*" />
       <Param Name="ppvSite" CType="void**" RefIID="#0" />
     </Method>
@@ -225,7 +225,7 @@
   </Interface>
   <Interface IID="{0c733a66-2a1c-11ce-ade5-00aa0044773d}" Name="IErrorLookup" Inherit="IUnknown">
     <!-- https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms723039(v=vs.85) -->
-    <Method Name="GetErrorDescription" Print="1">
+    <Method Name="GetErrorDescription" Print="1" Trace="1">
       <Param Name="hrError" CType="HRESULT" />
       <Param Name="dwLookupID" CType="DWORD" />
       <Param Name="pdispparams" CType="DISPPARAMS*" />

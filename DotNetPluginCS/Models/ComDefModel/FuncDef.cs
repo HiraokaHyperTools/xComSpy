@@ -15,6 +15,7 @@ namespace DotNetPlugin.Models.ComDefModel
         [XmlAttribute] public string Name { get; set; }
         [XmlAttribute] public string Setup { get; set; }
         [XmlAttribute] public string Print { get; set; }
+        [XmlAttribute] public string Trace { get; set; }
 
         [XmlElement]
         public ParamDef[] Param { get; set; }

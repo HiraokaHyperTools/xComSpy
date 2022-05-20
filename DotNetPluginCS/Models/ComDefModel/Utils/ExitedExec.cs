@@ -3,16 +3,19 @@ using DotNetPlugin.Utils;
 using Managed.x64dbg.SDK;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using xComSpy.Models.ComDefModel.Utils;
 
 namespace DotNetPlugin.Models.ComDefModel.Utils
 {
     public class ExitedExec
     {
         private static readonly Regex numRef = new Regex("^#(?<idx>\\d+)$");
+        private TextWriter log = LogToMyFile.Get();
 
         public List<OutputInterface> OutputInterfaces { get; } = new List<OutputInterface>();
         public CoClassHint ProgId { get; }
@@ -107,7 +110,7 @@ namespace DotNetPlugin.Models.ComDefModel.Utils
                     ? $"{parent.Name}::{call.Name}"
                     : $"{call.Name}";
 
-                Console.WriteLine($"# {fullCall}({string.Join(", ", simpleArgs)})");
+                log.WriteLine($"# {fullCall}({string.Join(", ", simpleArgs)})");
 
                 if (valueResolver != null)
                 {
@@ -117,7 +120,7 @@ namespace DotNetPlugin.Models.ComDefModel.Utils
                         var resp = valueResolver(new ValueResolverInput { Parm = parms[x], CType = parmDef.CType, });
                         if (resp != null)
                         {
-                            Console.WriteLine($"#  {parmDef.Name} = {resp}");
+                            log.WriteLine($"#  {parmDef.Name} = {resp}");
                         }
                     }
                 }
